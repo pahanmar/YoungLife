@@ -1,7 +1,7 @@
 import React from "react";
-import Container from "../../components/Container/Container.jsx";
+import Container from "../Container/Container.jsx";
 import styles from './CartPageContainer.module.css';
-import CartPage from "../../components/CartPage/CartPage.jsx";
+import CartPage from "../CartPage/CartPage.jsx";
 
 
 

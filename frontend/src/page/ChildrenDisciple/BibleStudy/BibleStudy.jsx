@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './BibleStudy.module.css'; // Создадим этот файл для стилей
 import Container from "../../../components/Container/Container.jsx";
 import imgMain from "/img/bible.png"
-import Main from "../../../components/Main/Main";
+import Main from "../../../components/Main/Main.jsx";
 
 
 const BibleStudy = () => {

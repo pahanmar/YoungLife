@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './Footer.module.css'; // Создадим этот файл для стилей
-import Container from "../../components/Container/Container.jsx";
+import Container from "../Container/Container.jsx";
 import { Link } from 'react-router-dom';
 
 const Footer = () => {

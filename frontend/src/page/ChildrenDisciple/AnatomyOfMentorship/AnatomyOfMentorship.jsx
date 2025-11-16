@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './AnatomyOfMentorship.module.css'; // Создадим этот файл для стилей
 import Container from "../../../components/Container/Container.jsx";
 import imgMain from "/img/people.png"
-import Main from "../../../components/Main/Main";
+import Main from "../../../components/Main/Main.jsx";
 
 const AnatomyOfMentorship = () => {
   return (
