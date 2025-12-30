@@ -12,3 +12,12 @@ export const updateRole = async (req, res) => {
   const user = await prisma.user.update({ where: { id: Number(userId) }, data: { role } });
   res.json({ id: user.id, email: user.email, role: user.role });
 };
+
+export const routePermissions = async (req, res) => {
+  const list = [
+    { path: '/admin', mode: 'allow', roles: ['admin'] },
+    { path: '/books', mode: 'all', roles: [] },
+    { path: '/disciple', mode: 'deny',  roles: ['volunteer'] },
+  ];
+  res.json(list);
+};
