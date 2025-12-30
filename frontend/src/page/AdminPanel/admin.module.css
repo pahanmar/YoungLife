@@ -1,0 +1,91 @@
+/* --- Unified card wrapper for tables (users + permissions) --- */
+.card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(10,20,30,0.06);
+  overflow: hidden;
+  padding: 0; /* таблица сама управляет отступами */
+  margin-bottom: 26px;
+}
+
+/* если нужно, отдельная обёртка с паддингом */
+.cardInner {
+  padding: 18px;
+}
+
+/* Таблица: единый стиль для заголовков и ячеек */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.table thead {
+  background: #f8fbfc;
+  border-bottom: 1px solid #eef3f5;
+}
+
+.table thead th {
+  text-align: left;
+  padding: 14px 18px;
+  font-weight: 700;
+  color: #0b2233;
+  font-size: 14px;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #f3f6f7;
+}
+
+.table tbody td {
+  padding: 14px 18px;
+  vertical-align: middle;
+  color: #13323f;
+}
+
+/* Чередование фона строк, аккуратно и ненавязчиво */
+.table tbody tr:nth-child(even) {
+  background: #fbfeff;
+}
+
+/* Пустая строка */
+.empty {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+/* Стили для select в таблице */
+.select, .permissionsSelect {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #d7e3e7;
+  background: #fff;
+  font-size: 14px;
+  color: #0b2233;
+}
+
+/* Меньшие отступы для компактного вида */
+.compact .table thead th,
+.compact .table tbody td {
+  padding: 10px 12px;
+}
+
+/* Футер */
+.adminFooter {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-top: 1px solid #eef3f5;
+  color: #556b73;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Поведение на малых экранах */
+@media (max-width: 780px) {
+  .table thead { display: none; }
+  .table tbody tr { display: block; margin-bottom: 12px; background: #fff; box-shadow: 0 4px 12px rgba(10,20,30,0.04); border-radius: 8px; overflow: hidden; }
+  .table tbody td { display: block; padding: 10px 12px; }
+}

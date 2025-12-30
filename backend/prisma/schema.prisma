@@ -1,0 +1,37 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String?
+  email        String   @unique
+  phone        String?
+  passwordHash String
+  role         String   @default("user")
+  createdAt    DateTime @default(now())
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  revoked   Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Content {
+  id        Int      @id @default(autoincrement())
+  title     String
+  body      String
+  roles     String[]  // роли, которым доступен контент, пустой = публичный
+  createdAt DateTime @default(now())
+}
