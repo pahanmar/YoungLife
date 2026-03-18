@@ -2,3 +2,13 @@
   width: 100%;
   min-height: calc(100vh - 55px);
 }
+
+.status,
+.statusError {
+  text-align: center;
+  padding: 2rem;
+  color: #636e72;
+}
+.statusError {
+  color: #d63031;
+}

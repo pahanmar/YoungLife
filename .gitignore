@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 backend/.env
 frontend/.env
+
+# Загруженные файлы (книги, обложки)
+backend/uploads/*
+!backend/uploads/books/
+!backend/uploads/books/.gitkeep

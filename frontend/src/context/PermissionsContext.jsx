@@ -70,7 +70,7 @@ export const PermissionsProvider = ({ children }) => {
       if (fetchIdRef.current === id) {
         const map = {};
         list.forEach(r => {
-          if (r && r.path) map[r.path] = { mode: r.mode || 'all', roles: r.roles || [] };
+          if (r && r.path) map[r.path] = { mode: r.mode || 'all', roles: r.roles || [], hideFromNav: !!r.hideFromNav };
         });
         setPermissions(map);
       }

@@ -6,42 +6,21 @@ import { addDays } from './utils.js';
 
 const COOKIE_NAME = 'refreshToken';
 
-export const register = async (req, res) => {
-  const { name, email, password } = req.body;
-  if (!email || !password)
-    return res.status(400).json({ message: 'Email и пароль обязательны' });
-  const exists = await prisma.user.findUnique({ where: { email } });
-  if (exists)
-    return res.status(400).json({ message: 'Email уже используется' });
-  const passwordHash = await bcrypt.hash(password, 10);
-  const user = await prisma.user.create({
-    data: { name, email, passwordHash },
-  });
-
-  const refreshString = createRefreshString();
-  const expiresAt = addDays(config.REFRESH_EXPIRES_DAYS);
-  await prisma.refreshToken.create({
-    data: { token: refreshString, userId: user.id, expiresAt },
-  });
-
-  const accessToken = signAccess({ id: user.id, role: user.role });
-  res.cookie(COOKIE_NAME, refreshString, {
-    httpOnly: true,
-    sameSite: 'lax',
-    maxAge: config.REFRESH_EXPIRES_DAYS * 24 * 60 * 60 * 1000,
-  });
-  res.json({
-    user: { id: user.id, email: user.email, role: user.role, name: user.name },
-    accessToken,
-  });
-};
+const SUPER_ADMIN_EMAIL =
+  process.env.SEED_ADMIN_EMAIL || 'admin@younglife.local';
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password)
-    return res.status(400).json({ message: 'Email и пароль обязательны' });
+  const loginId = (email || '').trim();
+  if (!loginId || !password)
+    return res
+      .status(400)
+      .json({ message: 'Email/телефон и пароль обязательны' });
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const isEmail = loginId.includes('@');
+  const user = isEmail
+    ? await prisma.user.findUnique({ where: { email: loginId } })
+    : await prisma.user.findFirst({ where: { phone: loginId } });
   if (!user)
     return res.status(400).json({ message: 'Неверные учётные данные' });
 
@@ -55,13 +34,22 @@ export const login = async (req, res) => {
   });
 
   const accessToken = signAccess({ id: user.id, role: user.role });
+  const isProduction = process.env.NODE_ENV === 'production';
   res.cookie(COOKIE_NAME, refreshString, {
     httpOnly: true,
-    sameSite: 'lax',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/',
     maxAge: config.REFRESH_EXPIRES_DAYS * 24 * 60 * 60 * 1000,
   });
   res.json({
-    user: { id: user.id, email: user.email, role: user.role, name: user.name },
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+      phone: user.phone,
+    },
     accessToken,
   });
 };
@@ -92,6 +80,7 @@ export const refresh = async (req, res) => {
         email: user.email,
         role: user.role,
         name: user.name,
+        phone: user.phone,
       },
     });
   } catch (err) {
@@ -107,14 +96,26 @@ export const logout = async (req, res) => {
       where: { token },
       data: { revoked: true },
     });
-    res.clearCookie(COOKIE_NAME);
+    res.clearCookie(COOKIE_NAME, { path: '/', httpOnly: true });
   }
   res.json({ message: 'Выход' });
 };
 
 export const me = async (req, res) => {
   const user = req.user;
+  const full = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { id: true, email: true, role: true, name: true, phone: true },
+  });
   res.json({
-    user: { id: user.id, email: user.email, role: user.role, name: user.name },
+    user: full
+      ? {
+          id: full.id,
+          email: full.email,
+          role: full.role,
+          name: full.name,
+          phone: full.phone,
+        }
+      : req.user,
   });
 };

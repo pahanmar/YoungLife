@@ -21,10 +21,12 @@
   position: relative;
 }
 
+/* Левый столбец (1, 3, 5…) — при наведении синий */
 .cartHoverFirst:hover {
   background-color: #99afba;
 }
 
+/* Правый столбец (2, 4, 6…) — при наведении оранжевый */
 .cartHoverSecond:hover {
   background-color: #de821f;
 }

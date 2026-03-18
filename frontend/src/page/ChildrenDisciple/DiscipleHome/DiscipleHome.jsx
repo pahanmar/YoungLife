@@ -1,14 +1,36 @@
-import React from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import Container from "../../../components/Container/Container";
-import Instrument from "/img/instrument.png"
+import Instrument from "/img/instrument.png";
 import Main from "../../../components/Main/Main";
 import CartPageContainer from "../../../components/CartPageContainer/CartPageContainer";
-import styles from './DiscipleHome.module.css'; // Создадим этот файл для стилей
+import { useAuth } from "../../../context/AuthContext";
+import { usePermissions } from "../../../context/PermissionsContext";
+import styles from "./DiscipleHome.module.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
+function canAccessPath(permissions, user, path) {
+  const rule = permissions[path] || { mode: "all", roles: [] };
+  const userRoles = !user ? [] : (Array.isArray(user.roles) ? user.roles : user.role ? [user.role] : []);
+  const hasAny = (roles) => (roles || []).some((r) => userRoles.includes(r));
+  if (rule.mode === "allow") return hasAny(rule.roles);
+  if (rule.mode === "deny") return !hasAny(rule.roles);
+  return true;
+}
 
 function DiscipleHome() {
-  const cartData = [
+  const { user } = useAuth();
+  const { permissions } = usePermissions();
+  const [downloadDocs, setDownloadDocs] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/download-documents`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => setDownloadDocs(Array.isArray(data) ? data : []))
+      .catch(() => setDownloadDocs([]));
+  }, []);
+
+  const allCartData = [
     {
       title: "Что такое наставничество и ученичество",
       link: "/disciple/nastavnichestvo-i-uchenichestvo",
@@ -51,6 +73,14 @@ function DiscipleHome() {
     },
   ];
 
+  const cartData = useMemo(() => {
+    return allCartData.filter((item) => {
+      const hasAccess = canAccessPath(permissions, user, item.link);
+      const hideFromNav = !!permissions[item.link]?.hideFromNav;
+      return hasAccess || !hideFromNav;
+    });
+  }, [permissions, user]);
+
   return (
     <>
       <Main img={Instrument} title={"Наставничество и ученичество"} description={"материалы для помощников, лидеров и руководителей"}/>
@@ -58,18 +88,27 @@ function DiscipleHome() {
         <CartPageContainer cartData={cartData}/>
         <div className={styles.downloadsWrapper}>
           <h3 className={styles.downloadsTitle}>Документы для скачивания</h3>
-          <a href="/downloads/Anketa.docx" className={styles.downloadButton} download>
-            <span className={styles.buttonIcon}>📄</span>
-            Анкета лидера-волонтера
-          </a>
-          <a href="/downloads/Ocenka.pdf" className={styles.downloadButton} download>
-            <span className={styles.buttonIcon}>📊</span>
-            Оценка клуба и служения
-          </a>
-          <a href="/downloads/Plan.docx" className={styles.downloadButton} download>
-            <span className={styles.buttonIcon}>📅</span>
-            Стратегический годовой план
-          </a>
+          {downloadDocs.length === 0 ? (
+            <p className={styles.downloadsEmpty}>Документов пока нет.</p>
+          ) : (
+            downloadDocs.map((doc) => (
+              <a
+                key={doc.id}
+                href={doc.fileUrl}
+                className={styles.downloadButton}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {doc.iconUrl ? (
+                  <img src={doc.iconUrl} alt="" className={styles.downloadButtonIcon} />
+                ) : (
+                  <span className={styles.buttonIcon}>📄</span>
+                )}
+                {doc.title}
+              </a>
+            ))
+          )}
         </div>
       </Container>
     </>

@@ -1,39 +1,51 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import styles from '../../page/AdminPanel/admin.module.css'; // можно использовать общий css или свой
+import { usePermissions } from '../../context/PermissionsContext';
+import styles from '../../page/AdminPanel/admin.module.css';
 
-// Небольшая заглушка для неавторизованных пользователей
-function NotAuthorized({ message = 'Доступ запрещён', showHome = true }) {
+function NotAuthorized({ showHome = true }) {
   return (
-    <div style={{ padding: 20 }}>
-      <h2 style={{ marginTop: 0 }}>Панель администратора</h2>
-      <div style={{
-        background: '#fff',
-        borderRadius: 10,
-        boxShadow: '0 6px 18px rgba(10,20,30,0.06)',
+    <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '50vh',
         padding: 20,
-        color: '#3b4b52'
+        textAlign: 'center'
       }}>
-        <p style={{ fontWeight: 600, margin: 0 }}>{message}</p>
-        {showHome && (
-          <div style={{ marginTop: 12 }}>
-            <a href="/" style={{ color: '#0b7a63' }}>Вернуться на главную</a>
-          </div>
-        )}
-      </div>
+      <p style={{
+          margin: 0,
+          fontSize: 18,
+          fontWeight: 600,
+          color: '#3b4b52',
+          maxWidth: 420
+        }}>
+        Для доступа к данному ресурсу обратитесь к администратору
+      </p>
+      {showHome && (
+        <div style={{ marginTop: 16 }}>
+          <a href="/" style={{ color: '#9DACC7' }}>Вернуться на главную</a>
+        </div>
+      )}
     </div>
   );
 }
 
 /*
   rule: { mode: 'all' | 'allow' | 'deny', roles: [] }
-  - mode 'all' => доступ всем
-  - mode 'allow' => доступ только указанным ролям
-  - mode 'deny' => доступ всем кроме указанных ролей
+  path: если передан — правило берётся из permissions[path] при каждом рендере (актуальные права)
 */
-export default function RouteGuard({ rule = { mode: 'all', roles: [] }, children }) {
-  const { user, loading } = useAuth(); // предполагаем user.role или user?.roles
-  // Пока идёт загрузка аутентификации — можно показать заглушку или спиннер
+function getRule(permissions, path) {
+  const p = permissions[path];
+  return p ? { ...p, roles: p.roles || [] } : { mode: 'all', roles: [] };
+}
+
+export default function RouteGuard({ rule: ruleProp, path: pathProp, children }) {
+  const { user, loading } = useAuth();
+  const { permissions } = usePermissions();
+  const rule = pathProp != null ? getRule(permissions, pathProp) : (ruleProp ?? { mode: 'all', roles: [] });
+
   if (loading) {
     return <div style={{ padding: 20 }}>Проверка доступа...</div>;
   }
@@ -61,7 +73,7 @@ export default function RouteGuard({ rule = { mode: 'all', roles: [] }, children
 
   if (!allowed) {
     // Показываем простую чистую заглушку без контента админ-панели
-    return <NotAuthorized message="Доступ запрещён" />;
+    return <NotAuthorized />;
   }
 
   // Разрешён — рендерим children (админ-панель)

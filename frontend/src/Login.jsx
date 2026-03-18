@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import styles from './Login.module.css';
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
@@ -13,6 +13,16 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [err, setErr] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate(from, { replace: true });
+    }
+  }, [authLoading, user, navigate, from]);
+
+  if (authLoading || user) {
+    return null;
+  }
 
   const submit = async (e) => {
     e.preventDefault();
@@ -44,8 +54,10 @@ export default function Login() {
         <form className={styles.form} onSubmit={submit}>
           <input
             className={styles.input}
-            type="email"
-            placeholder="Email"
+            type="text"
+            inputMode="email"
+            autoComplete="username"
+            placeholder="Email или телефон"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
@@ -54,6 +66,7 @@ export default function Login() {
             className={styles.input}
             type="password"
             placeholder="Пароль"
+            autoComplete="current-password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
@@ -67,26 +80,11 @@ export default function Login() {
             >
               {loading ? 'Вхожу...' : 'Войти'}
             </button>
-            <button
-              type="button"
-              className={styles.ghost}
-              onClick={() => navigate('/register')}
-              disabled={loading}
-            >
-              Регистрация
-            </button>
           </div>
 
           {err && <div className={styles.error}>{err}</div>}
         </form>
       </div>
-
-      <aside className={styles.aside}>
-        <h3 className={styles.titleSmall}>Почему войти</h3>
-        <p className={styles.subtitleSmall}>
-          Доступ к личному кабинету, материалам и админ-панели.
-        </p>
-      </aside>
     </div>
   );
 }

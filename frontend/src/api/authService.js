@@ -1,16 +1,6 @@
 // frontend/src/api/authService.js
 import api, { setAccessToken } from './api';
 
-// register: POST /api/auth/register
-export async function register({ name, email, password }) {
-  const res = await api.post('/api/auth/register', { name, email, password });
-  const data = res.data;
-  if (data?.accessToken) {
-    setAccessToken(data.accessToken);
-  }
-  return data;
-}
-
 // login: POST /api/auth/login
 export async function login(email, password) {
   const res = await api.post('/api/auth/login', { email, password });
@@ -21,9 +11,16 @@ export async function login(email, password) {
   return data;
 }
 
-// refresh: POST /api/auth/refresh
+// refresh: POST /api/auth/refresh (таймаут 8 с — при отсутствии куки не ждём долго)
+const REFRESH_TIMEOUT_MS = 8000;
+
 export async function refresh() {
-  const res = await api.post('/api/auth/refresh');
+  const res = await Promise.race([
+    api.post('/api/auth/refresh'),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), REFRESH_TIMEOUT_MS)
+    ),
+  ]);
   const data = res.data;
   if (data?.accessToken) {
     setAccessToken(data.accessToken);

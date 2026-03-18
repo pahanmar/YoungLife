@@ -12,14 +12,84 @@ export default async function seed() {
   const exists = await prisma.user.findUnique({ where: { email } });
   if (!exists) {
     const passwordHash = await bcrypt.hash(pwd, 10);
-    const user = await prisma.user.create({ data: { name: 'Admin', email, passwordHash, role: 'admin' }});
+    const user = await prisma.user.create({
+      data: { name: 'Admin', email, passwordHash, role: 'admin' },
+    });
     console.log('Admin created', user.email);
   } else {
     console.log('Admin exists');
   }
+
+  const defaultRoutes = [
+    { path: '/', mode: 'all', roles: [], hideFromNav: false },
+    { path: '/books', mode: 'all', roles: [], hideFromNav: false },
+    { path: '/admin', mode: 'allow', roles: ['admin'], hideFromNav: false },
+    { path: '/disciple', mode: 'all', roles: [], hideFromNav: false },
+    {
+      path: '/disciple/nastavnichestvo-i-uchenichestvo',
+      mode: 'all',
+      roles: [],
+      hideFromNav: false,
+    },
+    {
+      path: '/disciple/identichnost',
+      mode: 'all',
+      roles: [],
+      hideFromNav: false,
+    },
+    {
+      path: '/disciple/izuchenie-biblii',
+      mode: 'all',
+      roles: [],
+      hideFromNav: false,
+    },
+    {
+      path: '/disciple/3-p-uchenichestva',
+      mode: 'all',
+      roles: [],
+      hideFromNav: false,
+    },
+    {
+      path: '/disciple/novoe-rozhdenie',
+      mode: 'all',
+      roles: [],
+      hideFromNav: false,
+    },
+    {
+      path: '/disciple/anatomiya-nastavnichestva',
+      mode: 'all',
+      roles: [],
+      hideFromNav: false,
+    },
+    {
+      path: '/disciple/vidy-nastavnichestva',
+      mode: 'all',
+      roles: [],
+      hideFromNav: false,
+    },
+    {
+      path: '/disciple/zhizn-i-poklonenie',
+      mode: 'all',
+      roles: [],
+      hideFromNav: false,
+    },
+  ];
+  for (const r of defaultRoutes) {
+    await prisma.routePermission.upsert({
+      where: { path: r.path },
+      create: r,
+      update: {},
+    });
+  }
+  console.log('Route permissions seeded');
 }
 
 // если запущен напрямую
 if (process.argv[1] && process.argv[1].endsWith('prisma/seed.js')) {
-  seed().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); });
+  seed()
+    .then(() => process.exit(0))
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    });
 }

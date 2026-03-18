@@ -3,8 +3,8 @@
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 6px 18px rgba(10,20,30,0.06);
-  overflow: hidden;
-  padding: 0; /* таблица сама управляет отступами */
+  overflow: visible; /* чтобы выпадающий список ролей не обрезался */
+  padding: 0;
   margin-bottom: 26px;
 }
 
@@ -23,6 +23,14 @@
 .table thead {
   background: #f8fbfc;
   border-bottom: 1px solid #eef3f5;
+}
+
+.th {
+  text-align: left;
+  padding: 14px 18px;
+  font-weight: 700;
+  color: #0b2233;
+  font-size: 14px;
 }
 
 .table thead th {
@@ -81,6 +89,377 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+/* Ячейки таблицы прав */
+.routeCell { padding: 14px 18px; vertical-align: middle; }
+.routeLabel { font-weight: 500; color: #13323f; }
+.modeCell { padding: 14px 18px; vertical-align: middle; }
+.rolesCell { padding: 14px 18px; vertical-align: middle; position: relative; }
+
+/* Кнопка выбора ролей (выпадающий список) */
+.rolesTrigger {
+  display: inline-flex;
+  align-items: center;
+  min-width: 140px;
+  padding: 8px 12px;
+  border: 1px solid #d7e3e7;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 14px;
+  color: #0b2233;
+  cursor: pointer;
+  text-align: left;
+}
+.rolesTrigger:hover {
+  border-color: #9DACC7;
+  background: #f8fbfc;
+}
+
+/* Выпадающий список с чекбоксами */
+.rolesDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  min-width: 180px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #d7e3e7;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(10, 20, 30, 0.12);
+  z-index: 100;
+}
+.rolesCheckboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 14px;
+  color: #13323f;
+}
+.rolesCheckboxLabel input { cursor: pointer; }
+.rolesDropdownClose {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: 1px solid #9DACC7;
+  border-radius: 6px;
+  background: #9DACC7;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rolesDropdownClose:hover { background: #8a99b3; }
+
+.permissionsInput {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #d7e3e7;
+  font-size: 14px;
+  min-width: 160px;
+}
+.saveBtn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #d7e3e7;
+  background: #f8fbfc;
+  font-size: 14px;
+  cursor: pointer;
+}
+.saveBtn.primary { background: #9DACC7; color: #fff; border-color: #9DACC7; }
+.saveBtn.primary:hover { background: #8a99b3; }
+.permissionsCard { margin-bottom: 26px; }
+.permissionsTitle { margin: 0 0 14px 0; color: #0b2233; font-size: 18px; }
+.permissionsFooter { margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.reloadBtn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #d7e3e7;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+.reloadBtn:hover { background: #f8fbfc; }
+
+.discipleRouteWithArrow { display: inline-flex; align-items: center; gap: 8px; }
+.discipleArrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #d7e3e7;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 11px;
+  color: #0b2233;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.discipleArrow:hover { background: #f8fbfc; border-color: #9DACC7; color: #9DACC7; }
+
+.permissionsSubRow .routeCell,
+.permissionsSubRow .modeCell,
+.permissionsSubRow .rolesCell,
+.permissionsSubRow td { font-size: 13px; padding-top: 10px; padding-bottom: 10px; }
+.permissionsSubRow .routeLabel { font-weight: 500; color: #556b73; }
+.permissionsSubRow .permissionsSelect { font-size: 13px; padding: 6px 8px; }
+.permissionsSubRow .rolesTrigger { min-width: 120px; padding: 6px 10px; font-size: 13px; }
+
+/* Корневой контейнер и заголовок админки */
+.root { padding: 24px; max-width: 960px; margin: 0 auto; }
+
+.adminHeader {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eef3f5;
+  flex-shrink: 0;
+}
+
+/* Область контента под навменю — фиксированная минимальная высота, чтобы при переключении разделов шапка не смещалась */
+.adminContent {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+}
+.header { margin: 0 0 16px 0; color: #0b2233; font-size: 24px; }
+
+.adminNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  align-items: center;
+  min-height: 44px;
+}
+.adminNavLink,
+.adminNavLinkActive {
+  box-sizing: border-box;
+  padding: 10px 16px;
+  min-height: 40px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.25;
+  text-decoration: none;
+  color: #0b2233;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.adminNavLink:hover {
+  background: #f0faf8;
+  color: #9DACC7;
+}
+.adminNavLinkActive {
+  background: #9DACC7;
+  color: #fff;
+  border-color: #9DACC7;
+  cursor: default;
+}
+.adminNavLinkActive:hover {
+  background: #9DACC7;
+  color: #fff;
+  border-color: #9DACC7;
+}
+.error { padding: 12px 16px; margin-bottom: 16px; background: #fde8e8; color: #c53030; border-radius: 8px; font-size: 14px; }
+.info { padding: 12px 16px; margin-bottom: 16px; background: #e8ebf2; color: #9DACC7; border-radius: 8px; font-size: 14px; }
+.modalOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.modal { background: #fff; border-radius: 12px; padding: 24px 44px 24px 44px; max-width: 400px; box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+.modalUser { max-width: 520px; width: 90%; padding: 28px 44px 28px 44px; }
+.modalTitle { margin: 0 0 16px 0; font-size: 18px; }
+.modalMessage { margin: 0 0 20px 0; color: #556b73; }
+.modalActions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; }
+.btn { padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; }
+.ghost { background: #f8fbfc; border: 1px solid #d7e3e7; }
+.primary { background: #9DACC7; color: #fff; border: 1px solid #9DACC7; }
+.updating { margin-left: 8px; font-size: 13px; color: #556b73; }
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.toolbarTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0b2233;
+  flex: 0 0 auto;
+}
+.toolbarHint {
+  margin: 0 0 14px 0;
+  font-size: 13px;
+  color: #556b73;
+}
+.searchInput {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  border: 1px solid #d7e3e7;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.addUserBtn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid #9DACC7;
+  background: #9DACC7;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.addUserBtn:hover { background: #8a99b3; }
+.deleteUserBtn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #e53e3e;
+  background: #fff;
+  color: #e53e3e;
+  font-size: 13px;
+  cursor: pointer;
+}
+.deleteUserBtn:hover { background: #fff5f5; }
+
+.modalInput, .modalSelect {
+  display: block;
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 12px 18px;
+  border: 1px solid #d7e3e7;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.modalUser .modalInput,
+.modalUser .modalSelect { margin-bottom: 16px; padding: 12px 18px; }
+.modalSelect { cursor: pointer; }
+.modalTextarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 12px 18px;
+  border: 1px solid #d7e3e7;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.modalLabel { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: #0b2233; }
+.modalFile { display: block; width: 100%; margin-bottom: 14px; font-size: 14px; }
+
+.booksAccessBlock {
+  margin-bottom: 20px;
+  padding: 14px 18px;
+  background: #f8fbfc;
+  border-radius: 8px;
+  border: 1px solid #eef3f5;
+}
+.booksAccessTitle { margin: 0 0 12px 0; font-size: 15px; font-weight: 600; color: #0b2233; }
+.booksAccessRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+}
+
+.docOrderArrows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-right: 12px;
+}
+.arrowBtn {
+  width: 28px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #d7e3e7;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  color: #0b2233;
+}
+.arrowBtn:hover:not(:disabled) { background: #f8fbfc; border-color: #9DACC7; color: #9DACC7; }
+.arrowBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.booksList { list-style: none; padding: 0; margin: 0; }
+.booksListItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid #eef3f5;
+  flex-wrap: wrap;
+}
+.booksListInfo { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0; }
+.booksListCover {
+  width: 50px; height: 70px; object-fit: cover; border-radius: 6px; flex-shrink: 0;
+}
+.booksListAuthor { color: #556b73; font-weight: 400; }
+
+.actionButtons { display: flex; gap: 10px; flex-wrap: wrap; }
+.editUserBtn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #9DACC7;
+  background: #fff;
+  color: #9DACC7;
+  font-size: 13px;
+  cursor: pointer;
+}
+.editUserBtn:hover { background: #f0faf8; }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eef3f5;
+  flex-wrap: wrap;
+}
+.paginationLabel {
+  font-size: 14px;
+  color: #556b73;
+  margin-right: 4px;
+}
+.paginationBtn,
+.paginationBtnActive {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid #d7e3e7;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0b2233;
+  cursor: pointer;
+}
+.paginationBtn:hover {
+  background: #f8fbfc;
+  border-color: #9DACC7;
+}
+.paginationBtnActive {
+  background: #9DACC7;
+  border-color: #9DACC7;
+  color: #fff;
+  cursor: default;
 }
 
 /* Поведение на малых экранах */

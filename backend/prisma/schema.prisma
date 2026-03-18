@@ -35,3 +35,32 @@ model Content {
   roles     String[]  // роли, которым доступен контент, пустой = публичный
   createdAt DateTime @default(now())
 }
+
+model RoutePermission {
+  id           Int     @id @default(autoincrement())
+  path         String  @unique
+  mode         String  @default("all")  // all | allow | deny
+  roles        String[]
+  hideFromNav  Boolean @default(false)  // скрыть пункт меню для ролей без доступа
+}
+
+model Book {
+  id            Int      @id @default(autoincrement())
+  title         String
+  author        String?
+  description   String?
+  coverPath     String?  // путь к обложке в uploads
+  bookFilePath  String   // путь к файлу книги в uploads
+  downloadMode  String   @default("inherit")  // inherit | all | allow | deny
+  downloadRoles String[] @default([])         // роли для allow/deny (при inherit не используются)
+  createdAt     DateTime @default(now())
+}
+
+model DownloadDocument {
+  id        Int      @id @default(autoincrement())
+  title     String   // название для кнопки
+  iconPath  String?  // путь к иконке в uploads/documents
+  filePath  String   // путь к файлу в uploads/documents
+  sortOrder Int      @default(0) // порядок вывода
+  createdAt DateTime @default(now())
+}

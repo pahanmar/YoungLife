@@ -23,13 +23,6 @@ export const AuthProvider = ({ children }) => {
     })();
   }, []);
 
-  const register = async ({ name, email, password }) => {
-    const data = await authService.register({ name, email, password });
-    if (data?.user) setUser(data.user);
-    if (data?.accessToken) setAccessTokenState(data.accessToken);
-    return data;
-  };
-
   const login = async (email, password) => {
     const data = await authService.login(email, password);
     if (data?.user) setUser(data.user);
@@ -44,7 +37,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, accessToken, setUser, register, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, accessToken, setUser, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

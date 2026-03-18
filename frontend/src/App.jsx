@@ -15,19 +15,15 @@ import AnatomyOfMentorship from "./page/ChildrenDisciple/AnatomyOfMentorship/Ana
 import TypesOfMentorship from "./page/ChildrenDisciple/TypesOfMentorship/TypesOfMentorship.jsx";
 import LivePoklonenie from "./page/ChildrenDisciple/LivePoklonenie/LivePoklonenie.jsx";
 
-import Register from "./Register.jsx";
 import Login from "./Login.jsx";
 import AdminPanel from "./page/AdminPanel/AdminPanel.jsx";
 
 import { PrivateRoute as ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute.jsx";
 import { AuthProvider as RealAuthProvider } from "./context/AuthContext";
-import { PermissionsProvider, usePermissions } from "./context/PermissionsContext";
+import { PermissionsProvider } from "./context/PermissionsContext";
 import RouteGuard from "./components/RouteGuard/RouteGuard.jsx";
 
 import "./index.css";
-
-// небольшая хелпер-функция: получает правило по пути
-const getRule = (permissions, path) => permissions[path] ?? { mode: 'all', roles: [] };
 
 const NotFound = () => (
   <div style={{ padding: 24 }}>
@@ -38,13 +34,9 @@ const NotFound = () => (
   </div>
 );
 
-// Сборщик маршрутов вынесен в компонент, чтобы можно было использовать хук usePermissions
 function RouterConfig() {
-  const { permissions } = usePermissions();
-
   return createBrowserRouter([
     { path: "login", element: <Layout><Login /></Layout> },
-    { path: "register", element: <Layout><Register /></Layout> },
 
     {
       path: "/",
@@ -55,30 +47,28 @@ function RouterConfig() {
       ),
       errorElement: <NotFound />,
       children: [
-        { index: true, element: <Home /> },
-        { path: "books", element: <Books /> },
-
+        { index: true, element: <RouteGuard path="/"><Home /></RouteGuard> },
+        { path: "books", element: <RouteGuard path="/books"><Books /></RouteGuard> },
         {
           path: "disciple",
-          element: <Disciple />,
+          element: <RouteGuard path="/disciple"><Disciple /></RouteGuard>,
           children: [
-            { index: true, element: <DiscipleHome /> },
-            { path: "nastavnichestvo-i-uchenichestvo", element: <MentorshipApprenticeship /> },
-            { path: "identichnost", element: <IdentityInChrist /> },
-            { path: "izuchenie-biblii", element: <BibleStudy /> },
-            { path: "3-p-uchenichestva", element: <ThreePrinciplesOfDiscipleship /> },
-            { path: "novoe-rozhdenie", element: <NewBirth /> },
-            { path: "anatomiya-nastavnichestva", element: <AnatomyOfMentorship /> },
-            { path: "vidy-nastavnichestva", element: <TypesOfMentorship /> },
-            { path: "zhizn-i-poklonenie", element: <LivePoklonenie /> },
+            { index: true, element: <RouteGuard path="/disciple"><DiscipleHome /></RouteGuard> },
+            { path: "nastavnichestvo-i-uchenichestvo", element: <RouteGuard path="/disciple/nastavnichestvo-i-uchenichestvo"><MentorshipApprenticeship /></RouteGuard> },
+            { path: "identichnost", element: <RouteGuard path="/disciple/identichnost"><IdentityInChrist /></RouteGuard> },
+            { path: "izuchenie-biblii", element: <RouteGuard path="/disciple/izuchenie-biblii"><BibleStudy /></RouteGuard> },
+            { path: "3-p-uchenichestva", element: <RouteGuard path="/disciple/3-p-uchenichestva"><ThreePrinciplesOfDiscipleship /></RouteGuard> },
+            { path: "novoe-rozhdenie", element: <RouteGuard path="/disciple/novoe-rozhdenie"><NewBirth /></RouteGuard> },
+            { path: "anatomiya-nastavnichestva", element: <RouteGuard path="/disciple/anatomiya-nastavnichestva"><AnatomyOfMentorship /></RouteGuard> },
+            { path: "vidy-nastavnichestva", element: <RouteGuard path="/disciple/vidy-nastavnichestva"><TypesOfMentorship /></RouteGuard> },
+            { path: "zhizn-i-poklonenie", element: <RouteGuard path="/disciple/zhizn-i-poklonenie"><LivePoklonenie /></RouteGuard> },
           ]
         },
 
-        // admin: берем правило по '/admin'
         {
           path: "admin",
           element: (
-            <RouteGuard rule={getRule(permissions, '/admin')}>
+            <RouteGuard path="/admin">
               <Layout><AdminPanel /></Layout>
             </RouteGuard>
           )

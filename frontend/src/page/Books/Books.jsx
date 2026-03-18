@@ -1,55 +1,53 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Container from "../../components/Container/Container";
 import styles from './Books.module.css';
 import Navbar from "../../components/Navbar/Navbar";
 import Book from "../../components/Book/Book";
 import Footer from "../../components/Footer/Footer";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+
 function Books() {
-  const booksData = [
-    {
-      title: "Атомные привычки",
-      author: "Джеймс Клир",
-      coverImage: "/img/bookAtom.jpg",
-      description: "Атомные привычки – маленькие изменения, в которых скрыта огромная мощь! Вы давно пытаетесь измениться, но не получается. Не корите себя! Виноваты не вы, а система. Джеймс Клир развенчивает мифы о привычках, мотивации и силе воли. Опираясь на научные данные, результаты исследований, личный опыт и опыт успешных людей, он просто и понятно объясняет, как сделать хорошие привычки неизбежными, а вредные – невозможными. Без вариантов!",
-      downloadLink: "/downloads/Atomnye_privychki.pdf"
-    },
-    {
-      title: "Письма Лидеру",
-      author: "Боб Митчел",
-      coverImage: "/img/bookPisma.jpg",
-      description: "Здесь будет подробное описание книги. Вы можете рассказать о сюжете, основных идеях, персонажах и других важных аспектах произведения Боб Митчелл  был одним из первых, кто обрел свою веру в Иисуса Христа благодаря служению Young Life. Он прошел путь, будучи на самых разных ролях в служении: начиная с подростка в легендарном «Клубе 37» Джима Рейберна  до президента ми сии, на посту которого он был 10 лет  На протяжении многих лет многие упрашивали Митча, как одаренного спикера и оратора, изложить свои мысли в кн ге. И, наконец, когда ему было уже за 80, он это сделал. Книга «Письма лидеру Young Life» написана в виде 37 писем, адрес ванных семье Young Life, и представляет собой как будто живую беседу лично с Митчем. Она полна кротости, глубокой духовной мудрости, неотразимого юмора Б.Митчелла и его доброты. К ждое письмо станет для вас настоящим сокровищем, и вы будете возвращаться к ним и перечитывать их снова и снова  Книга поделена на пять частей, каждая из которых нач нается со вступительной истории от Митча, в которой он делится своей историей служения в Young Life.",
-      downloadLink: "/downloads/Pisma_Lidery.pdf"
-    },
-    {
-      title: "Инструменты Фасилитатора",
-      author: "",
-      coverImage: "/img/bookInstrument.jpg",
-      description: "Это пособие написано для того, чтобы помочь вам мудро руководить групповой работой. Инструменты, содержащиеся в нем, можно использовать в разных целях: для проведения командных встреч, совместного решения проблем, разработки новых ресурсов, оценки проекта, планирования мероприятий, постановки целей или обучения персонала. Некоторые рекомендации подойдут для семинаров или конференций длиной в несколько дней. Испробуйте разные идеи на практике и проверьте, насколько они подойдут участникам вашей группы! Не прекращайте учиться и развивать свои навыки, ведь успех вашей группы в значительной степени зависит от вас.",
-      downloadLink: "/downloads/Posobie_Instrumenty_Fasilitatora.pdf"
-    },
-    {
-      title: "Книга лидера",
-      author: "",
-      coverImage: "/img/bookLeader.jpg",
-      description: "",
-      downloadLink: "/downloads/Book_Leader.pdf"
-    }
-  ];
-  
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API_URL}/api/books`)
+      .then((res) => res.ok ? res.json() : Promise.reject(new Error('Ошибка загрузки')))
+      .then((data) => { if (!cancelled) setBooks(Array.isArray(data) ? data : []); })
+      .catch((e) => { if (!cancelled) setError(e?.message || 'Ошибка'); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const bookDataList = books.map((b) => ({
+    bookId: b.id,
+    title: b.title,
+    author: b.author || '',
+    coverImage: b.coverImage || '',
+    description: b.description || '',
+  }));
+
   return (
     <>
       <Navbar/>
       <main className={styles.main}>
         <Container>
-        {booksData.map((el, id) => (
-          <Book bookData={el} key={id}/>
-        ))}
+          {loading && <p className={styles.status}>Загрузка книг...</p>}
+          {error && <p className={styles.statusError}>{error}</p>}
+          {!loading && !error && bookDataList.length === 0 && (
+            <p className={styles.status}>Книг пока нет.</p>
+          )}
+          {!loading && !error && bookDataList.map((el, id) => (
+            <Book bookData={el} key={id} />
+          ))}
         </Container>
       </main>
       <Footer/>
     </>
-  )
+  );
 }
 
 export default Books;
