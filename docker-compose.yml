@@ -24,6 +24,9 @@ services:
       SEED_ADMIN_PWD: admin123
       JWT_SECRET: ${JWT_SECRET:-younglife-jwt-secret-change-in-production}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      # Для работы фронта, раздаваемого по `https://younglife-russia.ru`, добавляем нужный origin.
+      # Можно переопределить через переменную окружения CORS_ORIGINS.
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,https://younglife-russia.ru}
     depends_on:
       - postgres
     ports:

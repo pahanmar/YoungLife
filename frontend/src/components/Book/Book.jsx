@@ -3,7 +3,8 @@ import { FiDownload } from 'react-icons/fi';
 import styles from './Book.module.css';
 import { useAuth } from '../../context/AuthContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+// Базовый URL бэкенда. Если не задан - ходим в API относительно текущего домена (`/api/...`).
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 const ACCESS_DENIED_MESSAGE = 'Для доступа к данной книге обратитесь к администратору';
 
 const Book = ({ bookData = {} }) => {

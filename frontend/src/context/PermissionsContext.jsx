@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useAuth } from './AuthContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+// Базовый URL бэкенда. Если не задан - ходим в API относительно текущего домена (`/api/...`).
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 // fallback demo permissions — используется если бэкенд недоступен или нет токена
 const demoPermissions = {

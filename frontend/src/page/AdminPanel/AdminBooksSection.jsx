@@ -3,7 +3,8 @@ import { AuthContext } from '../../context/AuthContext';
 import { usePermissions } from '../../context/PermissionsContext';
 import styles from './admin.module.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+// Базовый URL бэкенда. Если не задан - ходим в API относительно текущего домена (`/api/...`).
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 const BOOKS_MODES = [
   { value: 'all', label: 'Доступ всем' },

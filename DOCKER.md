@@ -45,6 +45,8 @@ docker compose up --build
 | API      | http://localhost:4000 |
 | PostgreSQL | localhost:5432 (логин `younglife`, БД `younglife_db`) |
 
+В production, при включенном HTTPS через nginx, фронтенд и API будут доступны по одному домену: `https://younglife-russia.ru`.
+
 ## Остановка
 
 ```bash

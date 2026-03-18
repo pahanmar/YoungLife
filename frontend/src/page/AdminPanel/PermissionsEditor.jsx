@@ -3,7 +3,8 @@ import { usePermissions } from '../../context/PermissionsContext';
 import { useAuth } from '../../context/AuthContext';
 import styles from './admin.module.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+// Базовый URL бэкенда. Если не задан - ходим в API относительно текущего домена (`/api/...`).
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 const MAIN_ROUTES = [
   { path: '/', label: 'Главная (/)' },

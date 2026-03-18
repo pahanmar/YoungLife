@@ -5,7 +5,8 @@ import Navbar from "../../components/Navbar/Navbar";
 import Book from "../../components/Book/Book";
 import Footer from "../../components/Footer/Footer";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+// Базовый URL бэкенда. Если не задан - ходим в API относительно текущего домена (`/api/...`).
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 function Books() {
   const [books, setBooks] = useState([]);

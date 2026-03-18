@@ -15,9 +15,13 @@ import seed from '../prisma/seed.js';
 
 const app = express();
 
+// Нужен, если backend работает за reverse-proxy (nginx/traefik),
+// чтобы корректно интерпретировать scheme/secure контекст.
+app.set('trust proxy', 1);
+
 app.use(
   cors({
-    origin: config.FRONTEND_URL,
+    origin: config.CORS_ORIGINS,
     credentials: true,
   })
 );

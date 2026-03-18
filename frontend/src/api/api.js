@@ -3,7 +3,9 @@ import axios from 'axios';
 import { refresh } from './authService';
 
 const api = axios.create({
-  baseURL: 'http://localhost:4000',
+  // Если `VITE_API_URL` не задан — ходим на текущий origin и вызываем endpoints как `/api/...`.
+  // Это позволяет работать и по `http://localhost`, и по `https://younglife-russia.ru`.
+  baseURL: (import.meta.env.VITE_API_URL || '').replace(/\/$/, ''),
   withCredentials: true,
 });
 
