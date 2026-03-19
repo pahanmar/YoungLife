@@ -20,5 +20,5 @@ services:
       dockerfile: frontend/Dockerfile.prod
     # Контейнерный nginx слушает 80, наружу отдаём на localhost:5173
     ports:
-      - "127.0.0.1:5173:80"
+      - "127.0.0.1:8080:80"
     volumes: []
