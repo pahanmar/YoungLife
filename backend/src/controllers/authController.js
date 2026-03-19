@@ -6,8 +6,7 @@ import { addDays } from './utils.js';
 
 const COOKIE_NAME = 'refreshToken';
 
-const SUPER_ADMIN_EMAIL =
-  process.env.SEED_ADMIN_EMAIL || 'admin@younglife.local';
+const SUPER_ADMIN_EMAIL = (process.env.SEED_ADMIN_EMAIL || '').trim();
 
 export const login = async (req, res) => {
   const { email, password } = req.body;

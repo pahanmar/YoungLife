@@ -20,8 +20,9 @@ services:
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       DATABASE_URL: postgresql://younglife:younglifepass@postgres:5432/younglife_db
-      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@younglife.local}
-      SEED_ADMIN_PWD: ${SEED_ADMIN_PWD:-admin123}
+      # Админ создаётся сидом только если вы ЯВНО зададите оба значения в /opt/YoungLife/.env
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
+      SEED_ADMIN_PWD: ${SEED_ADMIN_PWD:-}
       JWT_SECRET: ${JWT_SECRET:-younglife-jwt-secret-change-in-production}
       FRONTEND_URL: ${FRONTEND_URL:-https://younglife-russia.ru}
       CORS_ORIGINS: ${CORS_ORIGINS:-https://younglife-russia.ru}

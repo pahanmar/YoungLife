@@ -7,17 +7,26 @@ const { PrismaClient } = prismaPkg;
 const prisma = new PrismaClient();
 
 export default async function seed() {
-  const email = process.env.SEED_ADMIN_EMAIL || 'admin@local';
-  const pwd = process.env.SEED_ADMIN_PWD || '12345678q';
-  const exists = await prisma.user.findUnique({ where: { email } });
-  if (!exists) {
-    const passwordHash = await bcrypt.hash(pwd, 10);
-    const user = await prisma.user.create({
-      data: { name: 'Admin', email, passwordHash, role: 'admin' },
-    });
-    console.log('Admin created', user.email);
+  const email = (process.env.SEED_ADMIN_EMAIL || '').trim();
+  const pwd = process.env.SEED_ADMIN_PWD || '';
+
+  // В продакшене не создаём "дефолтного" админа без явных переменных окружения.
+  // Это защищает от появления случайного admin@*.local.
+  if (email && pwd) {
+    const exists = await prisma.user.findUnique({ where: { email } });
+    if (!exists) {
+      const passwordHash = await bcrypt.hash(pwd, 10);
+      const user = await prisma.user.create({
+        data: { name: 'Admin', email, passwordHash, role: 'admin' },
+      });
+      console.log('Admin created', user.email);
+    } else {
+      console.log('Admin exists');
+    }
   } else {
-    console.log('Admin exists');
+    console.log(
+      'Admin seed skipped (set SEED_ADMIN_EMAIL and SEED_ADMIN_PWD to create admin)'
+    );
   }
 
   const defaultRoutes = [

@@ -1,8 +1,7 @@
 import prisma from '../prismaClient.js';
 import bcrypt from 'bcryptjs';
 
-const SUPER_ADMIN_EMAIL =
-  process.env.SEED_ADMIN_EMAIL || 'admin@younglife.local';
+const SUPER_ADMIN_EMAIL = (process.env.SEED_ADMIN_EMAIL || '').trim();
 const VALID_ROLES = ['user', 'volunteer', 'employee', 'admin'];
 const VALID_ROLES_ASSIGNABLE = ['user', 'volunteer', 'employee']; // без admin — админ по дефолту имеет доступ ко всему
 const VALID_MODES = ['all', 'allow', 'deny'];
