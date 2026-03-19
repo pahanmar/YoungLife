@@ -2,23 +2,45 @@ version: "3.8"
 
 services:
   postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: younglife
+      POSTGRES_PASSWORD: younglifepass
+      POSTGRES_DB: younglife_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     # В проде не публикуем Postgres наружу
     ports: []
 
   backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      DATABASE_URL: postgresql://younglife:younglifepass@postgres:5432/younglife_db
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@younglife.local}
+      SEED_ADMIN_PWD: ${SEED_ADMIN_PWD:-admin123}
+      JWT_SECRET: ${JWT_SECRET:-younglife-jwt-secret-change-in-production}
+      FRONTEND_URL: ${FRONTEND_URL:-https://younglife-russia.ru}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://younglife-russia.ru}
+      NODE_ENV: production
+    depends_on:
+      - postgres
     # В проде не публикуем backend наружу (только localhost, чтобы проксировал хостовый nginx)
     ports:
       - "127.0.0.1:4000:4000"
-    # В проде не монтируем исходники, работаем из образа
     volumes: []
-    environment:
-      NODE_ENV: production
 
   frontend:
     build:
       context: .
       dockerfile: frontend/Dockerfile.prod
-    # Контейнерный nginx слушает 80, наружу отдаём на localhost:5173
+    # Контейнерный nginx слушает 80, наружу отдаём на localhost:8080
     ports:
       - "127.0.0.1:8080:80"
     volumes: []
+
+volumes:
+  pgdata:
